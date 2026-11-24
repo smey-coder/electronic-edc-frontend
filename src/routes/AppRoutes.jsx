@@ -14,8 +14,12 @@ import UserManagementPage from '../pages/admin/UserManagementPage';
 import RoleManagementPage from '../pages/admin/RoleManagementPage';
 import PermissionManagementPage from '../pages/admin/PermissionManagementPage';
 import LicenseKeyManagementPage from '../pages/admin/LicenseKeyManagementPage';
+import FormulaManagementPage from '../pages/admin/FormulaManagementPage';
+import StudentManagementPage from '../pages/admin/StudentManagementPage';
+import SettingManagementPage from '../pages/admin/SettingManagementPage';
 import TeacherDashboard from '../pages/teacher/DashboardPage';
 import StudentDashboard from '../pages/student/DashboardPage';
+import LicenseGuard from '../components/common/LicenseGuard';
 
 export default function AppRoutes() {
   return (
@@ -51,6 +55,21 @@ export default function AppRoutes() {
                 <Route path="/admin/licenses" element={<LicenseKeyManagementPage />} />
               </Route>
 
+              {/* Formula management*/}
+              <Route element={<ProtectedRoute permissions="formula.read" />}>
+                <Route path="/admin/formulas" element={<FormulaManagementPage />} />
+              </Route>
+
+              {/* Student Management */}
+              <Route element={<ProtectedRoute permissions="student.read" />}>
+                <Route path="/admin/students" element={<StudentManagementPage />} />
+              </Route>
+
+               {/* Setting Management */}
+              <Route element={<ProtectedRoute permissions="profile.show" />}>
+                <Route path="/admin/settings" element={<SettingManagementPage />} />
+              </Route>
+
               {/* អាចបន្ថែម Route ផ្សេងៗរបស់ Admin ទីនេះ */}
             </Route>
           </Route>
@@ -67,6 +86,16 @@ export default function AppRoutes() {
           <Route element={<ProtectedRoute allowedRoles={['Student']} />}>
             <Route element={<StudentLayout />}>
               <Route path="/student/dashboard" element={<StudentDashboard />} />
+
+              {/* Formula management*/}
+              <Route element={<ProtectedRoute permissions="formula.read" />}>
+                <Route path="/student/calculators" element={<LicenseGuard><FormulaManagementPage /></LicenseGuard>} />
+              </Route>
+
+              {/* Setting Management */}
+              <Route element={<ProtectedRoute permissions="profile.show" />}>
+                <Route path="/student/settings" element={<SettingManagementPage />} />
+              </Route>
               {/* អាចបន្ថែម Route ផ្សេងៗរបស់ Student ទីនេះ */}
             </Route>
           </Route>

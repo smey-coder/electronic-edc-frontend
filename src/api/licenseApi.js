@@ -37,6 +37,10 @@ export const licenseService = {
   // DELETE /license-keys/{key_id} (Admin only + license.delete)
   remove: async (id) => 
     unwrap(await api.delete(`/license-keys/${id}`)),
+
+  me: () => api.get('/auth/me').then((r) => r.data),
+  redeem: (raw_key) => api.post('/auth/license/redeem', { raw_key }).then((r) => r.data),
 };
+
 
 export default licenseService;
