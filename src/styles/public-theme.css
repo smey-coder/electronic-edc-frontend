@@ -1,0 +1,99 @@
+
+/* =========================================
+   Electronic-EDC Public Landing Page Theme
+========================================= */
+
+/* Light mode root */
+.public-light {
+  background-color: #f8fafc;
+  color: #0f172a;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Main backgrounds */
+.public-light .bg-slate-900 {
+  background-color: #ffffff;
+}
+
+.public-light .bg-slate-950 {
+  background-color: #f1f5f9;
+}
+
+.public-light .bg-slate-950\/60 {
+  background-color: #f1f5f9;
+}
+
+.public-light .bg-slate-900\/80 {
+  background-color: #ffffff;
+}
+
+.public-light .bg-slate-800 {
+  background-color: #e2e8f0;
+}
+
+.public-light .bg-slate-800\/50 {
+  background-color: #f1f5f9;
+}
+
+/* Text */
+.public-light .text-white {
+  color: #0f172a;
+}
+
+.public-light .text-slate-100 {
+  color: #1e293b;
+}
+
+.public-light .text-slate-300 {
+  color: #475569;
+}
+
+.public-light .text-slate-400 {
+  color: #64748b;
+}
+
+.public-light .text-slate-500 {
+  color: #64748b;
+}
+
+/* Borders */
+.public-light .border-slate-800 {
+  border-color: #e2e8f0;
+}
+
+.public-light .border-slate-700 {
+  border-color: #cbd5e1;
+}
+
+/* Hover states */
+.public-light .hover\:text-white:hover {
+  color: #0f172a;
+}
+
+.public-light .hover\:text-slate-300:hover {
+  color: #334155;
+}
+
+.public-light .hover\:bg-slate-800:hover {
+  background-color: #e2e8f0;
+}
+
+/* Slideshow overlay */
+.public-light .from-slate-900 {
+  --tw-gradient-from: #0f172a var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position);
+}
+
+.public-light .via-slate-900\/40 {
+  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(15 23 42 / 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+/* Smooth theme transition */
+.public-light,
+.public-light header,
+.public-light section,
+.public-light footer,
+.public-light section > div > div > div {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}

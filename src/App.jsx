@@ -1,10 +1,11 @@
-import AppRoutes from "./routes/AppRoutes";
-const App = () => {
-  return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased">
-      <AppRoutes />
-    </div>
-  );
-};
+import AppRoutes from './routes/AppRoutes';
+import { PublicSettingsProvider } from './context/PublicSettingsContext';
 
-export default App;
+export default function App() {
+  return (
+    // The language settings are available to every page below.
+    <PublicSettingsProvider>
+      <AppRoutes />
+    </PublicSettingsProvider>
+  );
+}
