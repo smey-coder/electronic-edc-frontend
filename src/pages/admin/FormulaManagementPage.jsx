@@ -5,7 +5,8 @@ import formulaVariableService from "../../api/formulaVariableApi ";
 import Modal from "../../components/common/UserModal";
 import FormulaFormModal from "../../components/forms/FormulaFormModal";
 import FormulaVariablesModal from "../../components/forms/FormulaVariablesModal";
-import { solveSteps } from '../../utils/edcExpression';
+import { solveSteps } from "../../utils/edcExpression";
+import ResultStep from "../../components/calculator/ResultStep";
 
 /* ------------------------------------------------------------------ */
 /* Small pieces                                                        */
@@ -253,12 +254,14 @@ export default function FormulaManagementPage() {
         setCalcResult({
           result: result.value,
           unit: modal.formula.variables?.[0]?.unit || "",
-          steps: result.steps || [], // ធានាថា steps ត្រូវបានส่งចូលទីនេះ
+          steps: result.steps || [], // ធានាថា steps ត្រូវបានចូលទីនេះ
         });
       }
     } catch (err) {
       console.error("Calculation Error:", err);
-      setModalError(err.message || "An unexpected error occurred during calculation.");
+      setModalError(
+        err.message || "An unexpected error occurred during calculation.",
+      );
       setCalcResult(null);
     } finally {
       setBusy(false);
@@ -611,7 +614,10 @@ export default function FormulaManagementPage() {
           onClose={closeModal}
           busy={busy}
         >
-          <form onSubmit={handleCalculateSubmit} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+          <form
+            onSubmit={handleCalculateSubmit}
+            className="space-y-4 max-h-[75vh] overflow-y-auto pr-1"
+          >
             {modalError && (
               <div
                 role="alert"
@@ -622,7 +628,9 @@ export default function FormulaManagementPage() {
             )}
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3">
-              <p className="text-xs font-medium text-slate-500">Expression Formula</p>
+              <p className="text-xs font-medium text-slate-500">
+                Expression Formula
+              </p>
               <code className="mt-0.5 block overflow-x-auto whitespace-nowrap font-mono text-[15px] font-semibold text-[#0F2438]">
                 {modal.formula.expression}
               </code>
@@ -675,76 +683,125 @@ export default function FormulaManagementPage() {
 
             {/* Structured Worked Solution / Steps Display */}
             {calcResult && calcResult.steps && (
-  <div className="mt-4 space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
-    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-      Worked Solution & Explanation
-    </h4>
+              <div className="mt-4 space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Worked Solution & Explanation
+                </h4>
 
-    <div className="space-y-2.5">
-      {calcResult.steps.map((step, idx) => {
-        switch (step.kind) {
-          case "formula":
-            return (
-              <div key={idx} className="rounded-lg border border-blue-100 bg-blue-50/60 p-3">
-                <span className="text-[11px] font-bold uppercase text-blue-800">Step 1: {step.title}</span>
-                <div className="mt-1 font-mono text-sm font-semibold text-blue-900">{step.expression}</div>
-              </div>
-            );
-          case "given":
-            return (
-              <div key={idx} className="rounded-lg border border-slate-200 bg-white p-3">
-                <span className="text-[11px] font-bold uppercase text-slate-600">Step 2: {step.title}</span>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  {step.items.map((item, i) => (
-                    <div key={i} className="rounded border border-slate-100 bg-slate-50 p-2 font-mono text-xs">
-                      <span className="text-slate-500">{item.name} ({item.label}):</span>{" "}
-                      <span className="font-bold text-slate-800">{item.value} {item.unit}</span>
-                    </div>
-                  ))}
+                <div className="space-y-2.5">
+                  {calcResult.steps.map((step, idx) => {
+                    switch (step.kind) {
+                      case "formula":
+                        return (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-blue-100 bg-blue-50/60 p-3"
+                          >
+                            <span className="text-[11px] font-bold uppercase text-blue-800">
+                              Step 1: {step.title}
+                            </span>
+                            <div className="mt-1 font-mono text-sm font-semibold text-blue-900">
+                              {step.expression}
+                            </div>
+                          </div>
+                        );
+                      case "given":
+                        return (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-slate-200 bg-white p-3"
+                          >
+                            <span className="text-[11px] font-bold uppercase text-slate-600">
+                              Step 2: {step.title}
+                            </span>
+                            <div className="mt-2 grid grid-cols-2 gap-2">
+                              {step.items.map((item, i) => (
+                                <div
+                                  key={i}
+                                  className="rounded border border-slate-100 bg-slate-50 p-2 font-mono text-xs"
+                                >
+                                  <span className="text-slate-500">
+                                    {item.name} ({item.label}):
+                                  </span>{" "}
+                                  <span className="font-bold text-slate-800">
+                                    {item.value} {item.unit}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      case "substitute":
+                        return (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-amber-100 bg-amber-50/60 p-3"
+                          >
+                            <span className="text-[11px] font-bold uppercase text-amber-800">
+                              Step 3: {step.title}
+                            </span>
+                            <div className="mt-1 font-mono text-sm font-semibold text-amber-900">
+                              {step.expression}
+                            </div>
+                            {step.note && (
+                              <p className="mt-1 text-xs italic text-amber-700">
+                                {step.note}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      case "calc":
+                        return (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-slate-200 bg-white p-3 space-y-1.5"
+                          >
+                            <span className="text-[11px] font-bold uppercase text-slate-600">
+                              Calculation
+                            </span>
+                            <div className="space-y-1">
+                              {step.details.map((detail, dIdx) => (
+                                <div
+                                  key={dIdx}
+                                  className="rounded bg-slate-50 p-2 font-mono text-xs text-slate-800 border border-slate-100"
+                                >
+                                  {detail}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="font-mono text-xs font-semibold text-blue-600 pt-1">
+                              Current: {step.expression}
+                            </div>
+                          </div>
+                        );
+                      // result final 
+                      case "result":
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-4"
+                          >
+                            <div>
+                              <span className="block text-[11px] font-bold uppercase text-emerald-800">
+                                Final Result
+                              </span>
+                              <span className="font-mono text-xl font-bold text-emerald-700">
+                                {step.value}
+                              </span>
+                              <span className="ml-2 font-mono text-xl font-bold text-emerald-700">
+                                {step.unit}
+                              </span>
+                            </div>
+                            <span className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
+                          </div>
+                        );
+                      default:
+                        return null;
+                    }
+                  })}
                 </div>
               </div>
-            );
-          case "substitute":
-            return (
-              <div key={idx} className="rounded-lg border border-amber-100 bg-amber-50/60 p-3">
-                <span className="text-[11px] font-bold uppercase text-amber-800">Step 3: {step.title}</span>
-                <div className="mt-1 font-mono text-sm font-semibold text-amber-900">{step.expression}</div>
-                {step.note && <p className="mt-1 text-xs italic text-amber-700">{step.note}</p>}
-              </div>
-            );
-          case "calc":
-            return (
-              <div key={idx} className="rounded-lg border border-slate-200 bg-white p-3 space-y-1.5">
-                <span className="text-[11px] font-bold uppercase text-slate-600">Calculation</span>
-                <div className="space-y-1">
-                  {step.details.map((detail, dIdx) => (
-                    <div key={dIdx} className="rounded bg-slate-50 p-2 font-mono text-xs text-slate-800 border border-slate-100">
-                      {detail}
-                    </div>
-                  ))}
-                </div>
-                <div className="font-mono text-xs font-semibold text-blue-600 pt-1">
-                  Current: {step.expression}
-                </div>
-              </div>
-            );
-          case "result":
-            return (
-              <div key={idx} className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                <div>
-                  <span className="block text-[11px] font-bold uppercase text-emerald-800">Final Result</span>
-                  <span className="font-mono text-xl font-bold text-emerald-700">{step.value}</span>
-                </div>
-                <span className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-            );
-          default:
-            return null;
-        }
-      })}
-    </div>
-  </div>
-)}
+            )}
           </form>
         </Modal>
       )}

@@ -943,7 +943,7 @@ export function solveSteps({ expression, values = {}, variables = [] }) {
       });
     }
 
-    steps.push({ kind: 'result', title: 'Result', value: formatNumber(tree.value, 8), raw: tree.value });
+    steps.push({ kind: 'result', title: 'Result', value: formatNumber(tree.value, 8), raw: tree.value,unit: variables?.[0]?.unit || "",});
     return { ok: true, value: tree.value, steps };
   } catch (error) {
     if (error instanceof SolveError) return { ok: false, error: error.message };

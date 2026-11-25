@@ -207,7 +207,26 @@ export function solveSteps({ expression, values = {}, variables = [] }) {
       });
     }
 
-    steps.push({ kind: 'result', title: 'Result', value: formatNumber(tree.value, 8), raw: tree.value });
+    // Show final result Version 1
+    // steps.push({ kind: 'result', title: 'Result', value: formatNumber(tree.value, 8), raw: tree.value });
+
+    // Show final result Version 2
+    const resultVariable = variables?.find(
+      (variable) => variable.is_result === true
+    );
+
+    const resultUnit = resultVariable?.unit || '';
+
+    steps.push({
+      kind: 'result',
+      title: 'Final Result',
+      value: formatNumber(tree.value, 8),
+      raw: tree.value,
+      unit: resultUnit,
+      displayValue: `${formatNumber(tree.value, 8)} ${resultUnit}`.trim(),
+      label: resultVariable?.display_name || 'Calculated Result'
+    });
+
     return { ok: true, value: tree.value, steps };
   } catch (error) {
     if (error instanceof SolveError) return { ok: false, error: error.message };
