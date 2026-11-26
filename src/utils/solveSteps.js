@@ -151,7 +151,7 @@ function rewrite(node, depth, best, log) {
   }
 }
 
-export function solveSteps({ expression, values = {}, variables = [] }) {
+export function solveSteps({ expression, values = {}, variables = [], result_unit = '' }) {
   const parsed = parseExpression(expression);
   if (!parsed.ok) return { ok: false, error: parsed.error ?? 'The expression is empty.' };
 
@@ -207,23 +207,17 @@ export function solveSteps({ expression, values = {}, variables = [] }) {
       });
     }
 
-    // Show final result Version 1
-    // steps.push({ kind: 'result', title: 'Result', value: formatNumber(tree.value, 8), raw: tree.value });
-
-    // Show final result Version 2
-    const resultVariable = variables?.find(
-      (variable) => variable.is_result === true
-    );
-
-    const resultUnit = resultVariable?.unit || '';
+    // 🟢 កំណត់ Result Unit ផ្ដល់អាទិភាពឱ្យ result_unit ផ្ញើមក ឬ variable ដែលជា result
+    const resultVariable = variables?.find((variable) => variable.is_result === true);
+    const finalUnit = result_unit || resultVariable?.unit || '';
 
     steps.push({
       kind: 'result',
       title: 'Final Result',
       value: formatNumber(tree.value, 8),
       raw: tree.value,
-      unit: resultUnit,
-      displayValue: `${formatNumber(tree.value, 8)} ${resultUnit}`.trim(),
+      unit: finalUnit,
+      displayValue: `${formatNumber(tree.value, 8)} ${finalUnit}`.trim(),
       label: resultVariable?.display_name || 'Calculated Result'
     });
 

@@ -239,11 +239,12 @@ export default function FormulaManagementPage() {
         throw new Error("No formula selected.");
       }
 
-      // ហៅប្រើប្រាស់ solveSteps ពី edcExpression.js ឬ solveSteps.js
+      // ហៅប្រើប្រាស់ solveSteps ដោយបញ្ជូន result_unit ចូលទៅជាមួយ
       const result = solveSteps({
         expression: modal.formula.expression,
         values: calcInputs,
         variables: modal.formula.variables,
+        result_unit: modal.formula.result_unit, // 🟢 បញ្ជូន result_unit ចូលទីនេះ
       });
 
       if (!result.ok) {
@@ -253,8 +254,8 @@ export default function FormulaManagementPage() {
         // រៀបចំទុកដាក់ទិន្នន័យចូល State ឱ្យចំ Structure ដែលត្រូវបង្ហាញលើ UI
         setCalcResult({
           result: result.value,
-          unit: modal.formula.variables?.[0]?.unit || "",
-          steps: result.steps || [], // ធានាថា steps ត្រូវបានចូលទីនេះ
+          unit: modal.formula.result_unit || "", // 🟢 ប្រើប្រាស់ result_unit របស់រូបមន្តផ្ទាល់
+          steps: result.steps || [], 
         });
       }
     } catch (err) {
@@ -399,7 +400,6 @@ export default function FormulaManagementPage() {
             className={`${controlClass} w-full pl-10`}
           />
         </div>
-
         <div
           className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
           role="tablist"
@@ -444,7 +444,6 @@ export default function FormulaManagementPage() {
           </button>
         </div>
       )}
-
       {/* ---------- Formula cards ---------- */}
       <div
         className={`mt-6 transition-opacity duration-200 ${refreshing && !loading ? "opacity-60" : "opacity-100"}`}
@@ -561,7 +560,7 @@ export default function FormulaManagementPage() {
 
                   <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3">
                     <code className="whitespace-nowrap font-mono text-[15px] font-semibold text-[#0F2438]">
-                      {formula.expression}
+                      {formula.display_formula || formula.expression}
                     </code>
                   </div>
 
@@ -1014,7 +1013,6 @@ export default function FormulaManagementPage() {
           </div>
         </Modal>
       )}
-
       {/* ============================ TOASTS ============================ */}
       <div
         className="pointer-events-none fixed right-4 top-4 z-[60] flex flex-col gap-2"

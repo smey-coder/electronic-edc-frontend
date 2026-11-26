@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getErrorMessage } from '../../api/formulaApi';
 import ExpressionInput from './ExpressionInput';
 import { describeSymbol, normalizeExpression, parseExpression } from '../../utils/edcExpression';
+import DisplayFormulaInput from '../../components/calculator/DisplayFormulaInput';
 
 const inputClass =
   'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 outline-none transition ' +
@@ -12,13 +13,10 @@ const smallInput =
   'placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15';
 
 /**
- * Create or edit a formula, with the EDC expression builder.
- *   formula    – when editing
- *   categories – [{ id, name }]
- *   onSubmit   – async (payload); throw to show an error here. The modal closes after it succeeds.
- *
- * Create payload: { title, expression, description, category_id, variables: [{ variable_name, display_name?, unit? }] }
- * Edit payload:   { title, expression, description, category_id }   (variables are edited with the Variables button)
+- Create or edit a formula, with the EDC expression builder.
+-   formula    – when editing
+-   categories – [{ id, name }]
+-   onSubmit   – async (payload); throw to show an error here. The modal closes after it succeeds.
  */
 export default function FormulaFormModal({ formula, categories = [], onSubmit, onClose }) {
   const isEdit = Boolean(formula);
@@ -26,6 +24,9 @@ export default function FormulaFormModal({ formula, categories = [], onSubmit, o
   const [title, setTitle] = useState(formula?.title ?? '');
   const [categoryId, setCategoryId] = useState(String(formula?.category_id ?? formula?.category?.id ?? ''));
   const [expression, setExpression] = useState(formula?.expression ?? '');
+  const [displayFormula, setDisplayFormula] = useState(formula?.display_formula ?? '');
+  const [customLogic, setCustomLogic] = useState(formula?.custom_logic ?? '');
+  const [resultUnit, setResultUnit] = useState(formula?.result_unit ?? ''); // 🟢 កំណត់តម្លៃដើមជា 'W' ឬទទេរតាមតម្រូវការ
   const [description, setDescription] = useState(formula?.description ?? '');
   const [varMeta, setVarMeta] = useState({}); // what the user typed for each variable
   const [saving, setSaving] = useState(false);
@@ -60,6 +61,7 @@ export default function FormulaFormModal({ formula, categories = [], onSubmit, o
     setExpression(template.expression);
     if (!title.trim()) setTitle(template.title);
     if (!description.trim()) setDescription(template.description);
+    if (!displayFormula.trim() && template.expression) setDisplayFormula(template.expression);
   };
 
   // Escape closes the window, and the page behind it does not scroll.
@@ -86,6 +88,9 @@ export default function FormulaFormModal({ formula, categories = [], onSubmit, o
       const payload = {
         title: title.trim(),
         expression: normalizeExpression(expression).trim(),
+        display_formula: displayFormula.trim() || null, 
+        custom_logic: customLogic.trim() || null,       
+        result_unit: resultUnit.trim() || null,          // 🟢 បញ្ចូល Result Unit ទៅក្នុង Payload ផ្ញើទៅ Backend
         description: description.trim() || null,
         category_id: categoryId === '' ? null : Number(categoryId),
       };
@@ -173,10 +178,47 @@ export default function FormulaFormModal({ formula, categories = [], onSubmit, o
           </div>
 
           <div>
-            <label htmlFor="formula-expression" className="text-sm font-medium text-slate-700">Expression</label>
+            <label htmlFor="formula-expression" className="text-sm font-medium text-slate-700">Expression (Engine)</label>
             <div className="mt-1.5">
               <ExpressionInput id="formula-expression" value={expression} onChange={setExpression} onPickTemplate={pickTemplate} disabled={saving} />
             </div>
+          </div>
+
+          {/* DisplayFormulaInput Component */}
+          <DisplayFormulaInput 
+            value={displayFormula} 
+            onChange={setDisplayFormula} 
+            placeholder="e.g. P = V × I" 
+          />
+
+          {/* 🟢 Result Unit Input Field (added here) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="formula-result-unit" className="text-sm font-medium text-slate-700">
+                Result Unit <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="formula-result-unit"
+                type="text"
+                value={resultUnit}
+                onChange={(event) => setResultUnit(event.target.value)}
+                placeholder="e.g. W, V, Ω, A"
+                autoComplete="off"
+                className={inputClass}
+                required
+              />
+              <p className="mt-1 text-xs text-slate-500">Unit displayed with calculation result (e.g. W for Power).</p>
+            </div>
+          </div>
+
+          {/* Custom Logic / Script Input */}
+          <div>
+            <label htmlFor="formula-custom-logic" className="flex items-baseline justify-between text-sm font-medium text-slate-700">
+              <span>Custom Solving Logic</span><span className="text-xs font-normal text-slate-400">Optional JS Snippet</span>
+            </label>
+            <textarea id="formula-custom-logic" value={customLogic} onChange={(event) => setCustomLogic(event.target.value)} rows="2"
+              placeholder="e.g. return values.V * values.I;" className={inputClass} />
+            <p className="mt-1 text-xs text-slate-500">Allows admin/teachers to define custom calculation scripts using <code className="font-mono text-blue-600">values.variableName</code>.</p>
           </div>
 
           {/* variables */}
